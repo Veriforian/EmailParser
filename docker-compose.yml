@@ -1,0 +1,37 @@
+version: '2'
+services:
+  client:
+    image: validity-client:latest
+    build: ./client/
+    ports:
+      - '3000:3000'
+    working_dir: /client
+    depends_on:
+      - server
+    volumes:
+      - ./client:/app
+  server:
+    image: validity-server:latest
+    build: ./server/
+    restart: always
+    environment:
+      CHOKIDAR_USEPOLLING: 'true'
+    ports:
+      - '5000:5000'
+    working_dir: /server
+    depends_on:
+      - mongo
+    volumes:
+      - ./server:/app
+  mongo:
+    image: mongo
+    ports:
+      - '27017:27017'
+    volumes:
+      - db_data:/data/db
+      - db_config:/data/configdb
+volumes:
+  db_data:
+    driver: local
+  db_config:
+    driver: local
